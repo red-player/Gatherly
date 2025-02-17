@@ -30,4 +30,5 @@ export const ACCESS_TOKEN_EXPIRY = '1day'
 export const REFRESH_TOKEN_EXPIRY = '1day'
 export const ID_TOKEN_EXPIRY =  '1day'
 
+export const uploadPath = `${env.UPLOAD_PATH}`
 

@@ -8,18 +8,181 @@ datasource db {
 }
 
 model User {
-  id           String   @id @default(uuid())
-  email        String   @unique
+  id           String    @id @default(uuid())
+  email        String    @unique
   firstName    String?
   lastName     String?
   password     String
   hashPassword String
-  createdBy     String?
-  createdAt    DateTime @default(now())
+  createdBy    String?
+  userType     UserType? @default(USER)
+  createdAt    DateTime  @default(now())
   updatedAt    DateTime? @updatedAt
-  isActive     Boolean  @default(true)
+  isActive     Boolean   @default(true)
 
-  UserSession UserSession[] @relation("UserSession-User")
+  UserSession       UserSession[]       @relation("UserSession-User")
+  FileMetaData      fileMetaData[]      @relation("fileMetaData_createdByTouser")
+  SponsorCreatedBy  sponsor[]           @relation("Sponsor-User")
+  SponsorUser       sponsor[]           @relation("Sponsor-UserId")
+  eventCreatedBy    event[]             @relation("event-User")
+  UserEvent         userEvent[]         @relation("UserEvent-User")
+  userEventCategory userEventCategory[] @relation("userEventCategory-User")
+}
+
+model sponsor {
+  id         String    @id @default(uuid())
+  email      String
+  phone      String
+  address    String
+  city       String
+  state      String
+  zip        String
+  userId     String
+  createdBy  String
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime? @updatedAt
+  isActive   Boolean   @default(true)
+  isApproved Boolean
+
+  CreatedBy    User           @relation("Sponsor-User", fields: [createdBy], references: [id])
+  User         User           @relation("Sponsor-UserId", fields: [userId], references: [id])
+  eventSponsor eventSponsor[] @relation("SponsorToEventSponsor")
+  sponsorImage sponsorImage[] @relation("sponsorImage")
+}
+
+model event {
+  id               String   @id @default(uuid())
+  eventName        String
+  eventStartDate   DateTime
+  eventEndDate     DateTime
+  eventStartTime   String
+  eventEndTime     String
+  eventLocation    String
+  latitude         String
+  longitude        String
+  isFree           Boolean
+  eventDescription String
+
+  createdBy String
+  createdAt DateTime  @default(now())
+  updatedAt DateTime? @updatedAt
+  isActive  Boolean   @default(true)
+
+  User             User               @relation("event-User", fields: [createdBy], references: [id])
+  eventSponsor     eventSponsor[]     @relation("EventToEventSponsor")
+  UserEvent        userEvent[]        @relation("UserEvent-Event")
+  eventImage       eventImage[]       @relation("eventImage")
+  eventMapCategory eventMapCategory[] @relation("eventTOeventMapCategory")
+}
+
+model eventCategory {
+  id           String    @id @default(uuid())
+  categoryName String
+  isActive     Boolean   @default(true)
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime? @updatedAt
+
+  userEventCategory userEventCategory[] @relation("userEventCategory-eventCategory")
+  eventMapCategory  eventMapCategory[]  @relation("eventCategoryToeventMapCategory")
+}
+
+model eventMapCategory {
+  id              String @id @default(uuid())
+  eventId         String
+  eventCategoryId String
+  isActive     Boolean   @default(true)
+
+  event         event         @relation("eventTOeventMapCategory", fields: [eventId], references: [id])
+  eventCategory eventCategory @relation("eventCategoryToeventMapCategory", fields: [eventCategoryId], references: [id])
+}
+
+model eventSponsor {
+  id        String    @id @default(uuid())
+  eventId   String
+  sponsorId String
+  createdBy String
+  createdAt DateTime  @default(now())
+  updatedAt DateTime? @updatedAt
+  isActive  Boolean   @default(true)
+
+  event   event   @relation("EventToEventSponsor", fields: [eventId], references: [id])
+  sponsor sponsor @relation("SponsorToEventSponsor", fields: [sponsorId], references: [id])
+}
+
+model userEvent {
+  id        String    @id @default(uuid())
+  serialNo  Int
+  userId    String
+  eventId   String
+  ticketId  String    @unique
+  isPaid    Boolean?
+  createdBy String
+  createdAt DateTime  @default(now())
+  updatedAt DateTime? @updatedAt
+  isActive  Boolean   @default(true)
+
+  User  User  @relation("UserEvent-User", fields: [userId], references: [id])
+  event event @relation("UserEvent-Event", fields: [eventId], references: [id])
+}
+
+model eventImage {
+  id        String    @id @default(uuid())
+  eventId   String
+  imageName String
+  imagePath String
+  createdBy String
+  createdAt DateTime  @default(now())
+  updatedAt DateTime? @updatedAt
+  isActive  Boolean   @default(true)
+
+  event event @relation("eventImage", fields: [eventId], references: [id])
+}
+
+model sponsorImage {
+  id        String    @id @default(uuid())
+  sponsorId String
+  imageName String
+  imagePath String
+  createdBy String
+  createdAt DateTime  @default(now())
+  updatedAt DateTime? @updatedAt
+  isActive  Boolean   @default(true)
+
+  sponsor sponsor @relation("sponsorImage", fields: [sponsorId], references: [id])
+}
+
+model userEventCategory {
+  id              String    @id @default(uuid())
+  userId          String
+  eventCategoryId String
+  createdBy       String
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime? @updatedAt
+  isActive        Boolean   @default(true)
+
+  User          User          @relation("userEventCategory-User", fields: [userId], references: [id])
+  eventCategory eventCategory @relation("userEventCategory-eventCategory", fields: [eventCategoryId], references: [id])
+}
+
+model fileMetaData {
+  id             String   @id @unique(map: "fileMetaData_pk2") @db.VarChar(36)
+  name           String?  @db.VarChar(50)
+  description    String?  @db.Text
+  fileSize       Int?
+  fileType       String?  @db.VarChar(50)
+  filePath       String?  @db.VarChar(500)
+  fileExtension  String?  @db.VarChar(8)
+  createdBy      String?
+  createdAt      DateTime @default(now()) @db.Timestamp(0)
+  lastModifiedBy Int?
+  lastModified   DateTime @default(now()) @db.Timestamp(0)
+  isDeleted      Int      @default(0) @db.TinyInt
+  fileName       String?  @db.VarChar(250)
+  orgFileName    String?  @db.VarChar(250)
+
+  user_fileMetaData_createdByTouser User? @relation("fileMetaData_createdByTouser", fields: [createdBy], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fileMetaData_user_id_fk")
+
+  @@index([createdBy], map: "fileMetaData_user_id_fk")
 }
 
 model UserSession {
@@ -34,4 +197,10 @@ model UserSession {
   deviceId     String?
 
   User User @relation("UserSession-User", fields: [userId], references: [id])
+}
+
+enum UserType {
+  ADMIN
+  USER
+  SPONSOR
 }

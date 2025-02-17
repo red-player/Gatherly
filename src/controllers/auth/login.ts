@@ -1,4 +1,4 @@
-import { Prisma, PrismaClient } from "@prisma/client";
+import { Prisma, PrismaClient, UserType } from "@prisma/client";
 import { Request, Response } from "express";
 import responses, { ResponseProps } from "../../responses";
 import Joi from "joi";
@@ -112,6 +112,7 @@ const index = async (req: RequestType, res: ResponseType) => {
 					email: user.email,
 					firstName: user.firstName,
 					lastName: user.lastName,
+                    userType : user.userType
 				},
 				session: {
 					accessToken,
