@@ -81,6 +81,7 @@ const index = async (req: RequestType, res: ResponseType) => {
                     hashPassword
                 },
                 })
+                console.log("createUser",createUser)
             const spposor = await prisma.sponsor.create({
                 data :{
                     address : body.address || "",
@@ -94,6 +95,8 @@ const index = async (req: RequestType, res: ResponseType) => {
                     isApproved : false
                 }
             })
+            console.log("spposor",spposor)
+
     }else {
         const spposor = await prisma.sponsor.create({
             data :{
