@@ -91,7 +91,7 @@ const index = async (req: RequestType, res: ResponseType) => {
 
 		const idToken: string = (await jwt.signIdToken(userName)) as string;
 		const refreshToken: string = (await jwt.signRefreshToken(
-			userName
+			user,
 		)) as string;
 
 		const session = await prisma.userSession.create({

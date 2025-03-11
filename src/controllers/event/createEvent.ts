@@ -76,7 +76,7 @@ const index = async (req: RequestType, res: ResponseType) => {
     } = req.body;
     const { $schema } = req.query;
     const user = req.user;
-
+// console.log("object",user)
     // Describe schema
     if ($schema === 'true') {
       response = responses.generate('success', {
@@ -96,6 +96,7 @@ const index = async (req: RequestType, res: ResponseType) => {
     const sponsorDetails = await prisma.sponsor.findFirst({
         where :{
             userId : req.user.id,
+            isActive : true
         },
         select :{
             id : true,
@@ -107,7 +108,7 @@ const index = async (req: RequestType, res: ResponseType) => {
             }
         }
     })
-
+// console.log("sponsorDetails",sponsorDetails)
     if(sponsorDetails?.isApproved === false) {
         throw new Error ('SponsorIsApprovedToPerformThisAction')
     }
@@ -123,8 +124,8 @@ const index = async (req: RequestType, res: ResponseType) => {
     const create = await prisma.event.create({
         data: {
             eventName: eventName,
-            eventStartDate: eventStartDate,
-            eventEndDate: eventEndDate,
+            eventStartDate: new Date(eventStartDate),
+            eventEndDate: new Date(eventEndDate),
             eventStartTime: eventStartTime,
             eventEndTime: eventEndTime,
             eventLocation: eventLocation,

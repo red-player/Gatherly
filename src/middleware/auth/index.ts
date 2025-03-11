@@ -48,7 +48,7 @@ const baseAuth = async (req: Request, res: Response, next: NextFunction) => {
 			},
 		});
 		if (!isValid || !isValid.isActive) {
-			return next(createError.Unauthorized("Please login again Isvalid"));
+			return next(createError.Unauthorized("Please login again "));
 		}
 
 		await jwt.verifyAccessToken(accessToken).then(async (user) => {

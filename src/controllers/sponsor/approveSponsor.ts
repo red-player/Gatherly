@@ -59,11 +59,14 @@ const index = async (req: RequestType, res: ResponseType) => {
 
     const findIds = await prisma.sponsor.findMany({
         where :{
-            User :{
-                id :{
-                    in : sponsorIds
-                }
-            }
+            // User :{
+            //     id :{
+            //         in : sponsorIds
+            //     }
+            // }
+            id :{
+                      in : sponsorIds
+                  }
         }
     })
 
@@ -76,7 +79,21 @@ const index = async (req: RequestType, res: ResponseType) => {
             isApproved : isApprove
         }
     })
+    
    ))
+
+   const sponsorUpdate = findIds.map(async (i) => (
+    await prisma.user.update({
+        where :{
+            id : i.userId
+        },
+        data :{
+            userType : "SPONSOR"
+        }
+    })
+    
+   ))
+  //  console.log(approve)
 
    const s = sponsorIds.length > 1 ? "Users" : "User"
 
