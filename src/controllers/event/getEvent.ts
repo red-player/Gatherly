@@ -128,7 +128,8 @@ const index = async (req: RequestType, res: ResponseType) => {
                     eventCategory: {
                         id: {
                             in: eventCategoryIds
-                        }
+                        },
+                        isActive : true
                     }
                 }
             };
