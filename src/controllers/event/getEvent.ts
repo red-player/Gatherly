@@ -107,7 +107,7 @@ const index = async (req: RequestType, res: ResponseType) => {
           queryCondition.UserEvent.some.isPaid = true;
         }
       }
-      
+       
 
     if(myEvents === "true") {
         const findMyPreference = await prisma.userEventCategory.findMany({
