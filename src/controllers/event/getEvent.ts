@@ -83,7 +83,8 @@ const index = async (req: RequestType, res: ResponseType) => {
                 eventCategory: {
                     id: {
                         in: eventCategoryIds
-                    }
+                    },
+                    isActive : true
                 }
             }
         };
@@ -91,7 +92,7 @@ const index = async (req: RequestType, res: ResponseType) => {
 
     if (myRegisteredEvents === "true") {
         queryCondition.UserEvent = {
-          some: { userId: req.user.id }
+          some: { userId: req.user.id , isActive : true }
         };
         if (myCancelledEvents === "true") {
           if (!queryCondition.UserEvent.some) {
@@ -128,7 +129,8 @@ const index = async (req: RequestType, res: ResponseType) => {
                     eventCategory: {
                         id: {
                             in: eventCategoryIds
-                        }
+                        },
+                        isActive : true
                     }
                 }
             };
